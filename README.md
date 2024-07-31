@@ -77,3 +77,21 @@ appModule 引入
       envFilePath: 'src/.env'
     }),
 ```
+
+## jwt 模块
+
+pnpm install --save @nestjs/jwt
+
+## 守卫鉴权
+
+nest g guard login --flat --no-spec
+nest g guard permission --flat --no-spec
+
+## 响应内容的拦截器 规范响应格式
+nest g interceptor format-response --flat
+
+## 接口访问记录
+nest g interceptor invoke-record --flat
+
+## 错误响应格式化
+nest g filter custom-exception --flat
