@@ -6,6 +6,8 @@ import {
   Inject,
   Post,
   Query,
+  UploadedFile,
+  UseInterceptors,
 } from '@nestjs/common';
 import { UserService } from './user.service';
 import { RegisterUserDto } from './dto/registerUser.dto';
@@ -18,6 +20,8 @@ import { UpdateUserPasswordDto } from './dto/update-password.dto';
 import { JwtUserData } from 'src/login.guard';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { ListDto } from './dto/findList.dto';
+import { FileInterceptor } from '@nestjs/platform-express';
+import uploadConfig from './config/uploadConfig';
 
 @Controller('user')
 export class UserController {
@@ -85,6 +89,12 @@ export class UserController {
     if (!validateEmail(email)) {
       throw new BadRequestException('请输入正确的邮箱');
     }
+
+    // 判断距离上次获取验证码间隔是否已有一分钟
+    const lastCaptcha = await this.redisService.get(`captcha${email}`)
+    if (lastCaptcha) {
+      throw new BadRequestException('请勿频繁获取验证码');
+    }
     // 生成随机验证码
     const code = Math.random().toString().slice(2, 8);
     // 存入redis
@@ -104,6 +114,12 @@ export class UserController {
   @Get('send_private_captcha')
   @RequireLogin()
   async sendPrivateCaptcha(@UserInfo('email') email: string) {
+    // 判断距离上次获取验证码间隔是否已有一分钟
+    const lastCaptcha = await this.redisService.get(`captcha_private${email}`)
+    if (lastCaptcha) {
+      throw new BadRequestException('请勿频繁获取验证码');
+    }
+
     // 生成随机验证码
     const code = Math.random().toString().slice(2, 8);
     // 存入redis
@@ -125,5 +141,17 @@ export class UserController {
   @Get('initData')
   async initData() {
     return this.userService.initData();
+  }
+
+  // 上传图片
+  @Post('upload')
+  @UseInterceptors(FileInterceptor('file', uploadConfig))
+  async upload(@UploadedFile() file: Express.Multer.File) {
+    return {
+      filename: file.filename,
+      imgUrl: file.destination + '/' + file.filename,
+      mimetype: file.mimetype,
+      size: file.size
+    }
   }
 }
