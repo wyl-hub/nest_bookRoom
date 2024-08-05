@@ -4,7 +4,7 @@ import { extname } from 'path';
 
 export default {
   limits: {
-    fileSize: 1024 * 50,
+    fileSize: 1024 * 1024 * 1.2,
   },
   fileFilter: (_req, file: Express.Multer.File, cb) => {
     if (file.mimetype.match(/(jpg|jpeg|png|gif)/)) {

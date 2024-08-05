@@ -135,7 +135,7 @@ export class UserController {
       `,
     });
 
-    return '发送成功';
+    return '已向该账户绑定邮箱发送验证码';
   }
 
   @Get('initData')
