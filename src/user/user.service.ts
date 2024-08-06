@@ -7,7 +7,7 @@ import {
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from './entities/user.entity';
-import { Repository } from 'typeorm';
+import { Like, Repository } from 'typeorm';
 import { RegisterUserDto } from './dto/registerUser.dto';
 import { RedisService } from 'src/redis/redis.service';
 import { md5 } from 'src/utils';
@@ -150,15 +150,27 @@ export class UserService {
   }
 
   async list(listDto: ListDto) {
+    const condition: Record<string, any> = {}
+
+    if (listDto.username) {
+      condition.username = Like(`%${listDto.username}%`)
+    }
+
+    if (listDto.nickName) {
+      condition.nickName = Like(`%${listDto.nickName}%`)
+    }
+
+    if (listDto.email) {
+      condition.email = Like(`%${listDto.email}%`)
+    }
+
     const [list, totalCount] = await this.userRepository.findAndCount({
+      select: ['id', 'username', 'nickName', 'email', 'phoneNumber', 'isFrozen', 'headPic', 'createTime'],
       skip: (listDto.pageNo - 1) * listDto.pageSize,
-      take: listDto.pageSize
+      take: listDto.pageSize,
+      where: condition
     })
     
-    list.forEach(item => {
-      delete item.password
-    })
-
     return {
       list,
       totalCount

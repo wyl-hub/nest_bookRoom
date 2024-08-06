@@ -10,4 +10,8 @@ export class ListDto {
       message: '每页数量不能为空'
     })
     pageSize: number;
+
+    email: string
+    username: string
+    nickName: string
 }
