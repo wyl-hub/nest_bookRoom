@@ -74,7 +74,6 @@ export class UserController {
 
   @Post('list')
   async list(@Body() listDto: ListDto) {
-    console.log('listDto', listDto)
     return await this.userService.list(listDto)
   }
 
