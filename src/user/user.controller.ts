@@ -153,4 +153,9 @@ export class UserController {
       size: file.size
     }
   }
+
+  @Get('aaa')
+  aaa() {
+    return 'aaa'
+  }
 }

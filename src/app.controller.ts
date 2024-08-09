@@ -10,11 +10,4 @@ export class AppController {
   getHello(): string {
     return this.appService.getHello();
   }
-
-  @Get('aaa')
-  @RequireLogin()
-  aaa(@UserInfo('username') username) {
-    console.log('username', username)
-    return 'aaa'
-  }
 }

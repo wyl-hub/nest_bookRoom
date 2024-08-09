@@ -27,20 +27,13 @@ export class UpdateMeetingRoomDto {
     })
     location: string;
 
-    @IsNotEmpty({
-        message: '设备不能为空'
-    })
     @MaxLength(50, {
         message: '设备最长为 50 字符'
     })
     equipment: string;
 
-    @IsNotEmpty({
-        message: '描述不能为空'
-    })
     @MaxLength(100, {
         message: '描述最长为 100 字符'
     })
     description: string;
-
 }

@@ -15,15 +15,15 @@ export class MeetingRoomService {
     const condition: Record<string, any> = {};
 
     if (listDto.name) {
-      condition.username = Like(`%${listDto.name}%`);
+      condition.name = Like(`%${listDto.name}%`);
     }
 
     if (listDto.capacity) {
-      condition.nickName = Like(`%${listDto.capacity}%`);
+      condition.capacity = Like(`%${listDto.capacity}%`);
     }
 
     if (listDto.equipment) {
-      condition.email = Like(`%${listDto.equipment}%`);
+      condition.equipment = Like(`%${listDto.equipment}%`);
     }
 
     const [list, totalCount] = await this.meetingRoomRepository.findAndCount({
@@ -61,31 +61,43 @@ export class MeetingRoomService {
     });
 
     if (!foundRoom) {
-      throw new BadRequestException('会议室不存在！')
+      throw new BadRequestException('会议室不存在！');
     }
 
-    foundRoom.name = updateMeetingRoomDto.name
-    foundRoom.location = updateMeetingRoomDto.location
-    foundRoom.equipment = updateMeetingRoomDto.equipment
-    foundRoom.description = updateMeetingRoomDto.description
-    foundRoom.capacity = updateMeetingRoomDto.capacity
+    foundRoom.name = updateMeetingRoomDto.name;
+    foundRoom.location = updateMeetingRoomDto.location;
+    foundRoom.equipment = updateMeetingRoomDto.equipment;
+    foundRoom.description = updateMeetingRoomDto.description;
+    foundRoom.capacity = updateMeetingRoomDto.capacity;
 
     try {
-      await this.meetingRoomRepository.update({
-        id: foundRoom.id
-      }, foundRoom)
-      return '修改信息成功'
-    } catch(e) {
-      return '修改失败'
+      await this.meetingRoomRepository.update(
+        {
+          id: foundRoom.id,
+        },
+        foundRoom,
+      );
+      return '修改信息成功';
+    } catch (e) {
+      return '修改失败';
     }
   }
 
   async findById(id: number) {
-    return this.meetingRoomRepository.findOneBy({ id })
+    const foundMeet = await this.meetingRoomRepository.findOneBy({ id });
+    if (!foundMeet) {
+      throw new BadRequestException('查询失败');
+    }
+    return foundMeet;
   }
 
   async delete(id: number) {
-    return 'xxx'
+    try {
+      await this.meetingRoomRepository.delete(id);
+      return '删除成功';
+    } catch (e) {
+      return '删除失败';
+    }
   }
 
   initData() {
@@ -107,6 +119,11 @@ export class MeetingRoomService {
     room3.equipment = '白板，电视';
     room3.location = '三层东';
 
-    this.meetingRoomRepository.save([room1, room2, room3]);
+    try {
+      this.meetingRoomRepository.save([room1, room2, room3]);
+      return '初始化';
+    } catch (e) {
+      return '错误';
+    }
   }
 }
